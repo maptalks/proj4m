@@ -8,4 +8,6 @@ public interface Projection {
 
     Point inverse(Point point);
 
+    ProjectionType getType();
+
 }

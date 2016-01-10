@@ -33,4 +33,8 @@ public class SphericalMercator implements Projection {
         return point;
     }
 
+    public ProjectionType getType() {
+        return ProjectionType.PROJECTED;
+    }
+
 }

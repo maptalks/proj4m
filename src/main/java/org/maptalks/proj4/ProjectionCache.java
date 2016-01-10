@@ -18,8 +18,10 @@ public class ProjectionCache {
         Projection longlat = new LonLat();
         cache.put("merc", merc);
         cache.put("bmerc", baidu);
-        cache.put("baidu", baidu);
         cache.put("longlat", longlat);
+        cache.put("latlong", longlat);
+        cache.put("lnglat", longlat);
+        cache.put("latlng", longlat);
     }
 
     public static Projection get(String name) throws Proj4Exception {

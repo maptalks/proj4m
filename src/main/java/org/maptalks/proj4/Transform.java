@@ -1,6 +1,7 @@
 package org.maptalks.proj4;
 
 import org.maptalks.proj4.projection.Projection;
+import org.maptalks.proj4.projection.ProjectionType;
 
 public class Transform {
 
@@ -9,7 +10,7 @@ public class Transform {
         String dstProjName = dstProj.getProjName();
         Projection srcProjection = ProjectionCache.get(srcProjName);
         Projection dstProjection = ProjectionCache.get(dstProjName);
-        if (!srcProjName.equals("longlat")) {
+        if (srcProjection.getType() == ProjectionType.PROJECTED) {
             point = srcProjection.inverse(point);
         }
 
@@ -17,7 +18,7 @@ public class Transform {
         String dstDatumCode = dstProj.getDatumCode();
         point = DatumTransform.transform(srcDatumCode, dstDatumCode, point);
 
-        if (!dstProjName.equals("longlat")) {
+        if (dstProjection.getType() == ProjectionType.PROJECTED) {
             point = dstProjection.forward(point);
         }
 

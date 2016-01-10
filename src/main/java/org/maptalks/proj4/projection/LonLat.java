@@ -12,4 +12,8 @@ public class LonLat implements Projection {
         return point;
     }
 
+    public ProjectionType getType() {
+        return ProjectionType.GEOGRAPHIC;
+    }
+
 }

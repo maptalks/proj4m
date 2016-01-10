@@ -12,6 +12,10 @@ public class BaiduMercator implements Projection {
         return this.convertMC2LL(point);
     }
 
+    public ProjectionType getType() {
+        return ProjectionType.PROJECTED;
+    }
+
     private Point convertMC2LL(Point point) {
         double y_abs = Math.abs(point.getY());
 
