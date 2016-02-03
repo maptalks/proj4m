@@ -7,13 +7,13 @@ proj4 minimal/maptalks
     - EPSG:4326, `+proj=longlat +datum=WGS84 +no_defs`
 - GCJ02
     - GCJ02, `+proj=longlat +dataum=GCJ02`
-    - Projected GCJ02, `+proj=merc +datum=GCJ02`
+    - GCJ02MC, `+proj=merc +datum=GCJ02`
 - BD09
     - BD09LL, `+proj=longlat +datum=BD09`
     - BD09MC, `+proj=bmerc +datum=BD09`
 
-## TODO
-Add alias for these projectons, then can be used like:
+## Usage
 ```
-Proj4 proj = new Proj4("+proj=bmerc +datum=BD09", "EPSG:3857");
+Proj4 proj = new Proj4("GCJ02", "+proj=merc +datum=GCJ02");
+proj.forward(new double[]{120.0, 30.0});
 ```
