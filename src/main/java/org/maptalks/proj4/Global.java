@@ -14,6 +14,7 @@ public class Global {
         def("GCJ02MC", "+proj=merc +dataum=GCJ02");
         def("BD09LL", "+proj=longlat +datum=BD09");
         def("BD09MC", "+proj=bmerc +datum=BD09");
+        def("IDENTITY", "+proj=identity +no_defs");
     }
 
     public static boolean has(String name) {

@@ -22,6 +22,7 @@ public class ProjectionCache {
         cache.put("latlong", longlat);
         cache.put("lnglat", longlat);
         cache.put("latlng", longlat);
+        cache.put("identity", longlat);
     }
 
     public static Projection get(String name) throws Proj4Exception {
