@@ -17,7 +17,7 @@ public class BD09LL implements Datum {
         return fromGCJ02(gcj02.fromWGS84(point));
     }
 
-    private static Point toGCJ02(Point point) {
+    public static Point toGCJ02(Point point) {
         double x = point.getX();
         double y = point.getY();
         x = x - 0.0065;
@@ -32,7 +32,7 @@ public class BD09LL implements Datum {
         return point;
     }
 
-    private static Point fromGCJ02(Point point) {
+    public static Point fromGCJ02(Point point) {
         double x = point.getX();
         double y = point.getY();
         double z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * X_PI);
