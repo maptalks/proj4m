@@ -16,10 +16,8 @@ public class DatumCache {
         Datum cgcs2000 = new CGCS2000();
         cache.put("wgs84", wgs84);
         cache.put("gcj02", gcj02);
-        cache.put("bd09ll", bd09ll);
         cache.put("bd09", bd09ll);
         cache.put("cgcs2000", cgcs2000);
-        cache.put("cgcs", cgcs2000);
     }
 
     public static Datum get(String name) throws Proj4Exception {
