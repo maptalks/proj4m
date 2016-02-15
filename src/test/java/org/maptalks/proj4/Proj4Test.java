@@ -60,11 +60,24 @@ public class Proj4Test {
 
     @Test
     public void testInverseWithMixed() throws Exception {
-        Proj4 proj = new Proj4("EPSG:4326", EPSG3857);
+        Proj4 proj = new Proj4("EPSG:4326", "EPSG:4326");
         double[] coord = proj.inverse(new double[]{13358338.89, 3503549.84});
         double tolerance = 1e-7;
         assertEquals(coord[0], 120.0, tolerance);
         assertEquals(coord[1], 30.0, tolerance);
+    }
+
+    @Test
+    public void testSameProj() throws Exception {
+        Proj4 proj = new Proj4("GCJ02", "GCJ02");
+        double[] o = new double[]{121.8999, 21.3333};
+        double[] iv = proj.inverse(o);
+        double[] fw = proj.forward(o);
+        double tolerance = 0;
+        assertEquals(o[0], iv[0], tolerance);
+        assertEquals(o[0], fw[0], tolerance);
+        assertEquals(o[1], iv[1], tolerance);
+        assertEquals(o[1], fw[1], tolerance);
     }
 
     @Test

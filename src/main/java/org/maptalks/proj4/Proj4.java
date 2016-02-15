@@ -11,12 +11,18 @@ public class Proj4 {
     }
 
     public double[] forward(double[] coord) throws IllegalArgumentException, Proj4Exception {
+        if (srcProj.equals(dstProj)) {
+            return new double[]{coord[0], coord[1]};
+        }
         Point point = Point.fromArray(coord);
         point = Transform.transform(srcProj, dstProj, point);
         return new double[]{point.getX(), point.getY()};
     }
 
     public double[] inverse(double[] coord) throws IllegalArgumentException, Proj4Exception {
+        if (srcProj.equals(dstProj)) {
+            return new double[]{coord[0], coord[1]};
+        }
         Point point = Point.fromArray(coord);
         point = Transform.transform(dstProj, srcProj, point);
         return new double[]{point.getX(), point.getY()};
