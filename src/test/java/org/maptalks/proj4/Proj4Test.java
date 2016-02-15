@@ -92,7 +92,7 @@ public class Proj4Test {
         };
 
 
-        Proj4 proj = new Proj4("+proj=longlat +datum=GCJ02", "+proj=longlat +datum=BD09");
+        Proj4 proj = new Proj4("GCJ02", "BD09LL");
         double[][] lonlats = new double[][]{
             {114.68837663801743, 33.63312016454496},
             {114.68835840204522, 33.632072446353945},
