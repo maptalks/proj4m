@@ -60,7 +60,7 @@ public class Proj4Test {
 
     @Test
     public void testInverseWithMixed() throws Exception {
-        Proj4 proj = new Proj4("EPSG:4326", "EPSG:4326");
+        Proj4 proj = new Proj4("EPSG:4326",EPSG3857);
         double[] coord = proj.inverse(new double[]{13358338.89, 3503549.84});
         double tolerance = 1e-7;
         assertEquals(coord[0], 120.0, tolerance);
