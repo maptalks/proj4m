@@ -17,17 +17,24 @@ public class Global {
         def("IDENTITY", "+proj=identity +no_defs");
     }
 
+    private static String normalize(String name) {
+        return name.toUpperCase();
+    }
+
     public static boolean has(String name) {
-        return defs.containsKey(name);
+        String key = normalize(name);
+        return defs.containsKey(key);
     }
 
     public static Proj def(String name) {
-        return defs.get(name);
+        String key = normalize(name);
+        return defs.get(key);
     }
 
     public static void def(String name, String code) {
+        String key = normalize(name);
         if (code.startsWith("+")) {
-            defs.put(name, ProjString.parse(code));
+            defs.put(key, ProjString.parse(code));
         }
     }
 

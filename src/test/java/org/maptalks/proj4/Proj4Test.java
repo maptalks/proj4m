@@ -108,4 +108,15 @@ public class Proj4Test {
         }
     }
 
+    @Test
+    public void testGlobalDef() throws Exception {
+        Global.def("mars", "+proj=longlat +datum=GCJ02");
+
+        assertTrue(Global.has("mars"));
+        assertTrue(Global.has("MARS"));
+
+        Proj mars = Global.def("MARS");
+        assertEquals(Global.def("gcj02"), mars);
+    }
+
 }
