@@ -1,5 +1,8 @@
 # proj4m
-proj4 minimal/maptalks
+===
+[![Circle CI](https://circleci.com/gh/MapTalks/proj4m.svg?style=svg)](https://circleci.com/gh/MapTalks/proj4m)
+
+proj 4 mapresty
 
 ## supported projection
 - Normal
