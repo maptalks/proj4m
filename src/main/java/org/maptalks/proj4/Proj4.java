@@ -3,6 +3,7 @@ package org.maptalks.proj4;
 import org.maptalks.proj4.rhino.JsonModuleScriptProvider;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.commonjs.module.ModuleScriptProvider;
 import org.mozilla.javascript.commonjs.module.Require;
@@ -38,11 +39,11 @@ public class Proj4 implements Closeable {
         if (srcProj.equals(dstProj)) {
             return new double[]{coord[0], coord[1]};
         }
+        Point point = Point.fromArray(coord);
         if (needProj4js(srcProj, dstProj)) {
             loadProj4();
-            return forwardUsingProj4js(coord);
+            return forwardUsingProj4js(point);
         }
-        Point point = Point.fromArray(coord);
         point = Transform.transform(srcProj, dstProj, point);
         return new double[]{point.getX(), point.getY()};
     }
@@ -51,11 +52,11 @@ public class Proj4 implements Closeable {
         if (srcProj.equals(dstProj)) {
             return new double[]{coord[0], coord[1]};
         }
+        Point point = Point.fromArray(coord);
         if (needProj4js(srcProj, dstProj)) {
             loadProj4();
-            return inverseUsingProj4js(coord);
+            return inverseUsingProj4js(point);
         }
-        Point point = Point.fromArray(coord);
         point = Transform.transform(dstProj, srcProj, point);
         return new double[]{point.getX(), point.getY()};
     }
@@ -86,22 +87,28 @@ public class Proj4 implements Closeable {
         require.install(scope);
 
         URL base = getClass().getResource("/proj4js");
-        // TODO: how to load...
-        require.requireMain(cx, base + "/lib/index");
-        Object obj = scope.get("proj4", scope);
+        Scriptable script = require.requireMain(cx, base + "/lib/index");
 
-        proj4 = (Function) obj;
+        proj4 = (Function) script;
     }
 
-    private double[] forwardUsingProj4js(double[] coord) {
-        // TODO: convert args
-        Object result = proj4.call(cx, scope, scope, new Object[]{srcSRS, dstSRS, coord});
-        return (double[]) Context.jsToJava(result, Double[].class);
+    private Point proj4js(String srcSRS, String dstSRS, Point point) {
+        Object result = proj4.call(cx, scope, scope, new Object[]{
+            Context.javaToJS(srcSRS, scope),
+            Context.javaToJS(dstSRS, scope),
+            Context.javaToJS(point, scope)
+        });
+        return (Point) Context.jsToJava(result, Point.class);
     }
 
-    private double[] inverseUsingProj4js(double[] coord) {
-        Object result = proj4.call(cx, scope, scope, new Object[]{dstSRS, srcSRS, coord});
-        return (double[]) Context.jsToJava(result, Double[].class);
+    private double[] forwardUsingProj4js(Point point) {
+        Point p = proj4js(srcSRS, dstSRS, point);
+        return new double[]{p.getX(), p.getY()};
+    }
+
+    private double[] inverseUsingProj4js(Point point) {
+        Point p = proj4js(dstSRS, srcSRS, point);
+        return new double[]{p.getX(), p.getY()};
     }
 
     private static boolean isMarsDatum(String datum) {
