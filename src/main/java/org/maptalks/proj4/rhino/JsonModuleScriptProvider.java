@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
+import java.util.Map;
 
 public class JsonModuleScriptProvider implements ModuleScriptProvider {
 
@@ -47,8 +48,11 @@ public class JsonModuleScriptProvider implements ModuleScriptProvider {
 
         @Override
         public Object exec(Context cx, Scriptable scope) {
-            // TODO: how to assign obj to exports
-            scope.put("exports", scope, obj);
+            Object exports = ScriptableObject.getProperty(scope, "exports");
+            NativeObject nobj = (NativeObject) obj;
+            for (Map.Entry<Object, Object> entry : nobj.entrySet()) {
+                ScriptRuntime.setObjectProp(exports, (String) entry.getKey(), entry.getValue(), cx, scope);
+            }
             return Undefined.instance;
         }
     }
