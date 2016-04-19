@@ -24,9 +24,9 @@ public class Proj4 implements Closeable {
     private Proj dstProj;
     private String srcSRS;
     private String dstSRS;
-    private Context cx;
-    private ScriptableObject scope;
-    private Function proj4;
+    private static Context cx;
+    private static ScriptableObject scope;
+    private static Function proj4;
 
     public Proj4(String srcSRS, String dstSRS) throws Proj4Exception {
         this.srcSRS = srcSRS;
@@ -67,12 +67,14 @@ public class Proj4 implements Closeable {
         }
     }
 
-    private void loadProj4() {
+    private static void loadProj4() {
         if (proj4 != null) {
             return;
         }
+
         cx = Context.enter();
         scope = cx.initStandardObjects();
+
         RequireBuilder rb = new RequireBuilder();
         ModuleScriptProvider jsonModuleScriptProvider = new JsonModuleScriptProvider();
         ModuleScriptProvider genericModuleScriptProvider = new SoftCachingModuleScriptProvider(
@@ -86,7 +88,7 @@ public class Proj4 implements Closeable {
         Require require = rb.createRequire(cx, scope);
         require.install(scope);
 
-        URL base = getClass().getResource("/proj4js");
+        URL base = Proj4.class.getResource("/proj4js");
         Scriptable script = require.requireMain(cx, base + "/lib/index");
 
         proj4 = (Function) script;
