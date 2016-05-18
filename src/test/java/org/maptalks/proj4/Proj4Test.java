@@ -60,7 +60,7 @@ public class Proj4Test {
 
     @Test
     public void testInverseWithMixed() throws Exception {
-        Proj4 proj = new Proj4("EPSG:4326",EPSG3857);
+        Proj4 proj = new Proj4("EPSG:4326", EPSG3857);
         double[] coord = proj.inverse(new double[]{13358338.89, 3503549.84});
         double tolerance = 1e-7;
         assertEquals(coord[0], 120.0, tolerance);
@@ -83,12 +83,12 @@ public class Proj4Test {
     @Test
     public void testGcj02ToBaidu() throws Exception {
         double[][] expected = new double[][]{
-            {114.69490414027017,33.639096507711685},
-            {114.69488614273101,33.63804850387785},
-            {114.69500713986416,33.63794251496537},
-            {114.69578412001135,33.63793958798685},
-            {114.6959281162725,33.637965601694006},
-            {114.69751307493384,33.637957753486745}
+            {114.69490414027017, 33.639096507711685},
+            {114.69488614273101, 33.63804850387785},
+            {114.69500713986416, 33.63794251496537},
+            {114.69578412001135, 33.63793958798685},
+            {114.6959281162725, 33.637965601694006},
+            {114.69751307493384, 33.637957753486745}
         };
 
 
@@ -117,6 +117,19 @@ public class Proj4Test {
 
         Proj mars = Global.def("MARS");
         assertEquals(Global.def("gcj02"), mars);
+    }
+
+    @Test
+    public void testTestProj() throws Exception {
+        assertTrue(Parser.testProj("+proj=longlat +datum=GCJ02"));
+        assertTrue(!Parser.testProj("not proj4 string"));
+    }
+
+    @Test
+    public void testTestWKT() throws Exception {
+        String wkt = "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",0.0],PARAMETER[\"Standard_Parallel_1\",0.0],PARAMETER[\"Auxiliary_Sphere_Type\",0.0],UNIT[\"Meter\",1.0]]";
+        assertTrue(Parser.testWKT(wkt));
+        assertTrue(!Parser.testWKT("+proj=longlat +datum=GCJ02"));
     }
 
     @Test

@@ -1,14 +1,14 @@
 package org.maptalks.proj4;
 
-public class ProjString {
+class ProjString {
 
-    public static Proj parse(String srs) {
+    static Proj parse(String srs) {
         Proj proj = new Proj();
         String projName = null;
         String datumCode = null;
         String[] parts = srs.split("\\+");
-        for (int i = 0; i < parts.length; i++) {
-            String s = parts[i].trim();
+        for (String part : parts) {
+            String s = part.trim();
             String[] kv = s.split("=");
             if (kv.length != 2) continue;
             String k = kv[0];

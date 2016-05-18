@@ -1,10 +1,18 @@
 package org.maptalks.proj4;
 
-public class Parser {
+class Parser {
 
-    public static Proj parseCode(String code) throws Proj4Exception {
+    private static final String[] codeWords = new String[]{
+        "GEOGCS", "GEOCCS", "PROJCS", "LOCAL_CS"
+    };
+
+    static Proj parseCode(String code) throws Proj4Exception {
         if (testDef(code)) {
             return Global.def(code);
+        }
+
+        if (testWKT(code)) {
+            return WKTParser.parse(code);
         }
 
         if (testProj(code)) {
@@ -18,8 +26,16 @@ public class Parser {
         return Global.has(name);
     }
 
-    private static boolean testProj(String code) {
-        return code != null && code.length() > 0;
+    static boolean testWKT(String code) {
+        int a = 0;
+        for (String word : codeWords) {
+            a = a + 1 + code.indexOf(word);
+        }
+        return a > 0;
+    }
+
+    static boolean testProj(String code) {
+        return code.startsWith("+");
     }
 
 }
