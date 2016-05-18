@@ -21,12 +21,12 @@ public class Global {
         return name.toUpperCase();
     }
 
-    public static boolean has(String name) {
+    static boolean has(String name) {
         String key = normalize(name);
         return defs.containsKey(key);
     }
 
-    public static Proj def(String name) {
+    static Proj def(String name) {
         String key = normalize(name);
         return defs.get(key);
     }
@@ -35,6 +35,8 @@ public class Global {
         String key = normalize(name);
         if (code.startsWith("+")) {
             defs.put(key, ProjString.parse(code));
+        } else {
+            defs.put(key, WKTParser.parse(code));
         }
     }
 
