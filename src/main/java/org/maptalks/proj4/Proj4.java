@@ -10,6 +10,11 @@ public class Proj4 {
         this.dstProj = Parser.parseCode(dstSRS);
     }
 
+    public Proj4(Proj srcSRS, Proj dstSRS) throws Proj4Exception {
+        this.srcProj = srcSRS;
+        this.dstProj = dstSRS;
+    }
+
     public double[] forward(double[] coord) throws IllegalArgumentException, Proj4Exception {
         if (srcProj.equals(dstProj)) {
             return new double[]{coord[0], coord[1]};
