@@ -19,7 +19,7 @@ public class Parser {
     }
 
     private static boolean testProj(String code) {
-        return code.startsWith("+");
+        return code != null && code.length() > 0;
     }
 
 }
