@@ -14,7 +14,6 @@ import java.util.Map;
 
 public class JsonModuleScriptProvider implements ModuleScriptProvider {
 
-    @Override
     public ModuleScript getModuleScript(Context cx, String moduleId, URI moduleUri,
                                         URI baseUri, Scriptable paths) throws Exception {
         if (!moduleId.endsWith(".json")) {
@@ -46,12 +45,11 @@ public class JsonModuleScriptProvider implements ModuleScriptProvider {
             this.obj = obj;
         }
 
-        @Override
         public Object exec(Context cx, Scriptable scope) {
             Object exports = ScriptableObject.getProperty(scope, "exports");
             NativeObject nobj = (NativeObject) obj;
             for (Map.Entry<Object, Object> entry : nobj.entrySet()) {
-                ScriptRuntime.setObjectProp(exports, (String) entry.getKey(), entry.getValue(), cx, scope);
+                ScriptRuntime.setObjectProp(exports, (String) entry.getKey(), entry.getValue(), cx);
             }
             return Undefined.instance;
         }
