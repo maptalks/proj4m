@@ -1,34 +1,34 @@
 package org.maptalks.proj4.projection;
 
-import org.maptalks.proj4.Point;
+import org.maptalks.proj4.PointAdaptor;
 
-public class SphericalMercator implements Projection {
+public class SphericalMercator<T> implements Projection<T> {
 
     private static final double R = 6378137;
     private static final double MAX_LATITUDE = 85.0511287798;
 
-    public Point forward(Point point) {
+    public T forward(T point, PointAdaptor<T> pointAdaptor) {
         double d = Math.PI / 180;
         double max = MAX_LATITUDE;
-        double lat = Math.max(Math.min(max, point.getY()), -max);
+        double lat = Math.max(Math.min(max, pointAdaptor.getY(point)), -max);
         double sin = Math.sin(lat * d);
 
-        double x = R * point.getX() * d;
+        double x = R * pointAdaptor.getX(point) * d;
         double y = R * Math.log((1 + sin) / (1 - sin)) / 2;
 
-        point.setX(x);
-        point.setY(y);
+        pointAdaptor.setX(point, x);
+        pointAdaptor.setY(point, y);
 
         return point;
     }
 
-    public Point inverse(Point point) {
+    public T inverse(T point, PointAdaptor<T> pointAdaptor) {
         double d = 180 / Math.PI;
-        double lng = point.getX() * d / R;
-        double lat = (2 * Math.atan(Math.exp(point.getY() / R)) - (Math.PI / 2)) * d;
+        double lng = pointAdaptor.getX(point) * d / R;
+        double lat = (2 * Math.atan(Math.exp(pointAdaptor.getY(point) / R)) - (Math.PI / 2)) * d;
 
-        point.setX(lng);
-        point.setY(lat);
+        pointAdaptor.setX(point, lng);
+        pointAdaptor.setY(point, lat);
 
         return point;
     }

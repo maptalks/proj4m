@@ -1,14 +1,14 @@
 package org.maptalks.proj4.projection;
 
-import org.maptalks.proj4.Point;
+import org.maptalks.proj4.PointAdaptor;
 
-public class LonLat implements Projection {
+public class LonLat<T> implements Projection<T> {
 
-    public Point forward(Point point) {
+    public T forward(T point, PointAdaptor<T> pointAdaptor) {
         return point;
     }
 
-    public Point inverse(Point point) {
+    public T inverse(T point, PointAdaptor<T> pointAdaptor) {
         return point;
     }
 

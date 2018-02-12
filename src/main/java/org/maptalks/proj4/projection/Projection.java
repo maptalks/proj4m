@@ -1,12 +1,12 @@
 package org.maptalks.proj4.projection;
 
-import org.maptalks.proj4.Point;
+import org.maptalks.proj4.PointAdaptor;
 
-public interface Projection {
+public interface Projection<T> {
 
-    Point forward(Point point);
+    T forward(T point, PointAdaptor<T> pointAdaptor);
 
-    Point inverse(Point point);
+    T inverse(T point, PointAdaptor<T> pointAdaptor);
 
     ProjectionType getType();
 

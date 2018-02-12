@@ -1,16 +1,16 @@
 package org.maptalks.proj4.datum;
 
-import org.maptalks.proj4.Point;
+import org.maptalks.proj4.PointAdaptor;
 
-public class GCJ02 implements Datum {
+public class GCJ02<T> implements Datum<T> {
 
     private static double PI = Math.PI;
     private static double AXIS = 6378245.0;  //
     private static double OFFSET = 0.00669342162296594323;  //(a^2 - b^2) / a^2
 
-    public Point toWGS84(Point point) {
-        double lng = point.getX();
-        double lat = point.getY();
+    public T toWGS84(T point, PointAdaptor<T> pointAdaptor) {
+        double lng = pointAdaptor.getX(point);
+        double lat = pointAdaptor.getY(point);
 
         if (outOfChina(lng, lat)) {
             return point;
@@ -20,15 +20,15 @@ public class GCJ02 implements Datum {
         lng = lng - deltaD[0];
         lat = lat - deltaD[1];
 
-        point.setX(lng);
-        point.setY(lat);
+        pointAdaptor.setX(point, lng);
+        pointAdaptor.setY(point, lat);
 
         return point;
     }
 
-    public Point fromWGS84(Point point) {
-        double lng = point.getX();
-        double lat = point.getY();
+    public T fromWGS84(T point, PointAdaptor<T> pointAdaptor) {
+        double lng = pointAdaptor.getX(point);
+        double lat = pointAdaptor.getY(point);
 
         if (outOfChina(lng, lat)) {
             return point;
@@ -38,8 +38,8 @@ public class GCJ02 implements Datum {
         lng = lng + deltaD[0];
         lat = lat + deltaD[1];
 
-        point.setX(lng);
-        point.setY(lat);
+        pointAdaptor.setX(point, lng);
+        pointAdaptor.setY(point, lat);
 
         return point;
     }

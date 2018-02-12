@@ -1,11 +1,11 @@
 package org.maptalks.proj4.datum;
 
-import org.maptalks.proj4.Point;
+import org.maptalks.proj4.PointAdaptor;
 
-public interface Datum {
+public interface Datum<T> {
 
-    Point toWGS84(Point point);
+    T toWGS84(T point, PointAdaptor<T> pointAdaptor);
 
-    Point fromWGS84(Point point);
+    T fromWGS84(T point, PointAdaptor<T> pointAdaptor);
 
 }

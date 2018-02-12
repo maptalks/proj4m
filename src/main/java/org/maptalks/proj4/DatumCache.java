@@ -1,11 +1,14 @@
 package org.maptalks.proj4;
 
-import org.maptalks.proj4.datum.*;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.maptalks.proj4.datum.BD09LL;
+import org.maptalks.proj4.datum.CGCS2000;
+import org.maptalks.proj4.datum.Datum;
+import org.maptalks.proj4.datum.GCJ02;
+import org.maptalks.proj4.datum.WGS84;
 
-public class DatumCache {
+class DatumCache {
 
     private static Map<String, Datum> cache = new HashMap<String, Datum>();
 

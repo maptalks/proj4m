@@ -1,5 +1,10 @@
 package org.maptalks.proj4;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import org.maptalks.proj4.rhino.JsonModuleScriptProvider;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -12,64 +17,75 @@ import org.mozilla.javascript.commonjs.module.provider.MultiModuleScriptProvider
 import org.mozilla.javascript.commonjs.module.provider.SoftCachingModuleScriptProvider;
 import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+public class Proj4<T> implements Closeable {
 
-public class Proj4 implements Closeable {
-
-    private Proj srcProj;
-    private Proj dstProj;
-    private String srcSRS;
-    private String dstSRS;
     private static Context cx;
     private static ScriptableObject scope;
     private static Function proj4;
+    private final PointAdaptor<T> pointAdaptor;
+    private final Proj srcProj;
+    private final Proj dstProj;
+    private String srcSRS;
+    private String dstSRS;
 
     public Proj4(String srcSRS, String dstSRS) throws Proj4Exception {
         this.srcSRS = srcSRS;
         this.dstSRS = dstSRS;
         this.srcProj = Parser.parseCode(srcSRS);
         this.dstProj = Parser.parseCode(dstSRS);
+        this.pointAdaptor = new PointAdaptor<T>() {
+            public double getX(T point) {
+                return ((Point) point).getX();
+            }
+
+            public double getY(T point) {
+                return ((Point) point).getY();
+            }
+
+            public void setX(T point, double x) {
+                ((Point) point).setX(x);
+            }
+
+            public void setY(T point, double y) {
+                ((Point) point).setY(y);
+            }
+        };
+    }
+
+    public Proj4(String srcSRS, String dstSRS, PointAdaptor<T> pointAdaptor) throws Proj4Exception {
+        this.srcSRS = srcSRS;
+        this.dstSRS = dstSRS;
+        this.srcProj = Parser.parseCode(srcSRS);
+        this.dstProj = Parser.parseCode(dstSRS);
+        this.pointAdaptor = pointAdaptor;
     }
 
     public Proj4(Proj srcSRS, Proj dstSRS) throws Proj4Exception {
         this.srcProj = srcSRS;
         this.dstProj = dstSRS;
+        this.pointAdaptor = new PointAdaptor<T>() {
+            public double getX(T point) {
+                return ((Point) point).getX();
+            }
+
+            public double getY(T point) {
+                return ((Point) point).getY();
+            }
+
+            public void setX(T point, double x) {
+                ((Point) point).setX(x);
+            }
+
+            public void setY(T point, double y) {
+                ((Point) point).setY(y);
+            }
+        };
     }
 
-    public double[] forward(double[] coord) throws IllegalArgumentException, Proj4Exception {
-        if (srcProj.equals(dstProj)) {
-            return new double[]{coord[0], coord[1]};
-        }
-        Point point = Point.fromArray(coord);
-        if (needProj4js(srcProj, dstProj)) {
-            loadProj4();
-            return forwardUsingProj4js(point);
-        }
-        point = Transform.transform(srcProj, dstProj, point);
-        return new double[]{point.getX(), point.getY()};
-    }
-
-    public double[] inverse(double[] coord) throws IllegalArgumentException, Proj4Exception {
-        if (srcProj.equals(dstProj)) {
-            return new double[]{coord[0], coord[1]};
-        }
-        Point point = Point.fromArray(coord);
-        if (needProj4js(srcProj, dstProj)) {
-            loadProj4();
-            return inverseUsingProj4js(point);
-        }
-        point = Transform.transform(dstProj, srcProj, point);
-        return new double[]{point.getX(), point.getY()};
-    }
-
-    public void close() throws IOException {
-        if (proj4 != null) {
-            Context.exit();
-        }
+    public Proj4(Proj srcSRS, Proj dstSRS, PointAdaptor<T> pointExtractor) throws Proj4Exception {
+        this.srcProj = srcSRS;
+        this.dstProj = dstSRS;
+        this.pointAdaptor = pointExtractor;
     }
 
     private static void loadProj4() {
@@ -99,31 +115,63 @@ public class Proj4 implements Closeable {
         proj4 = (Function) script;
     }
 
-    private Point proj4js(String srcSRS, String dstSRS, Point point) {
-        Object result = proj4.call(cx, scope, scope, new Object[]{
-            Context.javaToJS(srcSRS, scope),
-            Context.javaToJS(dstSRS, scope),
-            Context.javaToJS(point, scope)
-        });
-        return (Point) Context.jsToJava(result, Point.class);
-    }
-
-    private double[] forwardUsingProj4js(Point point) {
-        Point p = proj4js(srcSRS, dstSRS, point);
-        return new double[]{p.getX(), p.getY()};
-    }
-
-    private double[] inverseUsingProj4js(Point point) {
-        Point p = proj4js(dstSRS, srcSRS, point);
-        return new double[]{p.getX(), p.getY()};
-    }
-
     private static boolean isMarsDatum(String datum) {
         return "BD09".equalsIgnoreCase(datum) || "GCJ02".equalsIgnoreCase(datum);
     }
 
     private static boolean needProj4js(Proj srcProj, Proj dstProj) {
         return (!isMarsDatum(srcProj.getDatumCode()) && !isMarsDatum(dstProj.getDatumCode()));
+    }
+
+    public T forward(T point) throws IllegalArgumentException, Proj4Exception {
+        if (srcProj.equals(dstProj)) {
+            return point;
+        }
+        if (needProj4js(srcProj, dstProj)) {
+            loadProj4();
+            return forwardUsingProj4js(point);
+        }
+        point = Transform.transform(srcProj, dstProj, point, pointAdaptor);
+        return point;
+    }
+
+    public T inverse(T point) throws IllegalArgumentException, Proj4Exception {
+        if (srcProj.equals(dstProj)) {
+            return point;
+        }
+        if (needProj4js(srcProj, dstProj)) {
+            loadProj4();
+            return inverseUsingProj4js(point);
+        }
+        point = Transform.transform(dstProj, srcProj, point, pointAdaptor);
+        return point;
+    }
+
+    public void close() throws IOException {
+        if (proj4 != null) {
+            Context.exit();
+        }
+    }
+
+    private T proj4js(String srcSRS, String dstSRS, T point) {
+        SimplePoint input = new SimplePoint(pointAdaptor.getX(point), pointAdaptor.getY(point));
+        Object result = proj4.call(cx, scope, scope, new Object[] {
+            Context.javaToJS(srcSRS, scope),
+            Context.javaToJS(dstSRS, scope),
+            Context.javaToJS(input, scope)
+        });
+        SimplePoint output = (SimplePoint) Context.jsToJava(result, SimplePoint.class);
+        pointAdaptor.setX(point, output.getX());
+        pointAdaptor.setY(point, output.getY());
+        return point;
+    }
+
+    private T forwardUsingProj4js(T point) {
+        return proj4js(srcSRS, dstSRS, point);
+    }
+
+    private T inverseUsingProj4js(T point) {
+        return proj4js(dstSRS, srcSRS, point);
     }
 
 }

@@ -1,14 +1,13 @@
 package org.maptalks.proj4;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.maptalks.proj4.projection.BaiduMercator;
 import org.maptalks.proj4.projection.LonLat;
 import org.maptalks.proj4.projection.Projection;
 import org.maptalks.proj4.projection.SphericalMercator;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class ProjectionCache {
+class ProjectionCache {
 
     private static Map<String, Projection> cache = new HashMap<String, Projection>();
 

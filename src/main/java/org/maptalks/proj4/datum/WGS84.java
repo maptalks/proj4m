@@ -1,14 +1,14 @@
 package org.maptalks.proj4.datum;
 
-import org.maptalks.proj4.Point;
+import org.maptalks.proj4.PointAdaptor;
 
-public class WGS84 implements Datum {
+public class WGS84<T> implements Datum<T> {
 
-    public Point toWGS84(Point point) {
+    public T toWGS84(T point, PointAdaptor<T> pointAdaptor) {
         return point;
     }
 
-    public Point fromWGS84(Point point) {
+    public T fromWGS84(T point, PointAdaptor<T> pointAdaptor) {
         return point;
     }
 
