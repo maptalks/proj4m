@@ -1,13 +1,11 @@
 package org.maptalks.proj4.rhino;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.Reader;
 import java.net.URI;
-import java.net.URL;
 import java.util.Map;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Kit;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.ScriptRuntime;
@@ -17,9 +15,18 @@ import org.mozilla.javascript.TopLevel;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.commonjs.module.ModuleScript;
 import org.mozilla.javascript.commonjs.module.ModuleScriptProvider;
+import org.mozilla.javascript.commonjs.module.provider.ModuleSource;
+import org.mozilla.javascript.commonjs.module.provider.ModuleSourceProvider;
+import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider;
 import org.mozilla.javascript.json.JsonParser;
 
 public class JsonModuleScriptProvider implements ModuleScriptProvider {
+
+    private ModuleSourceProvider moduleSourceProvider;
+
+    public JsonModuleScriptProvider(Iterable<URI> privilegedUris) {
+        this.moduleSourceProvider = new JsonUrlModuleSourceProvider(privilegedUris);
+    }
 
     public ModuleScript getModuleScript(Context cx, String moduleId, URI moduleUri,
                                         URI baseUri, Scriptable paths) throws Exception {
@@ -27,15 +34,9 @@ public class JsonModuleScriptProvider implements ModuleScriptProvider {
             return null;
         }
 
-        URL url = new URL(baseUri == null ? null : baseUri.toURL(), moduleUri.toString());
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(url.toURI())));
-        byte[] buf = new byte[1024];
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int n;
-        while ((n = in.read(buf, 0, buf.length)) != -1) {
-            baos.write(buf, 0, n);
-        }
-        String json = baos.toString("UTF-8");
+        ModuleSource moduleSource = moduleSourceProvider.loadSource(moduleUri, baseUri, null);
+        Reader reader = moduleSource.getReader();
+        String json = Kit.readReader(reader);
 
         JsonParser parser = new JsonParser(cx, new TopLevel());
         Object obj = parser.parseValue(json);
@@ -43,6 +44,19 @@ public class JsonModuleScriptProvider implements ModuleScriptProvider {
         JsonScript script = new JsonScript(obj);
 
         return new ModuleScript(script, moduleUri, baseUri);
+    }
+
+    private class JsonUrlModuleSourceProvider extends UrlModuleSourceProvider {
+
+        JsonUrlModuleSourceProvider(Iterable<URI> privilegedUris) {
+            super(privilegedUris, null);
+        }
+
+        @Override
+        protected ModuleSource loadFromUri(URI uri, URI base, Object validator) throws IOException {
+            return loadFromActualUri(uri, base, validator);
+        }
+
     }
 
     private class JsonScript implements Script {

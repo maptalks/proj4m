@@ -57,7 +57,7 @@ public class Proj4 implements Closeable {
         }
 
         RequireBuilder rb = new RequireBuilder();
-        ModuleScriptProvider jsonModuleScriptProvider = new JsonModuleScriptProvider();
+        ModuleScriptProvider jsonModuleScriptProvider = new JsonModuleScriptProvider(uris);
         ModuleScriptProvider genericModuleScriptProvider = new SoftCachingModuleScriptProvider(
             new UrlModuleSourceProvider(uris, null)
         );
