@@ -1,16 +1,23 @@
 package org.maptalks.proj4.rhino;
 
-import org.mozilla.javascript.*;
-import org.mozilla.javascript.commonjs.module.ModuleScript;
-import org.mozilla.javascript.commonjs.module.ModuleScriptProvider;
-import org.mozilla.javascript.json.JsonParser;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.Map;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Script;
+import org.mozilla.javascript.ScriptRuntime;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.TopLevel;
+import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.commonjs.module.ModuleScript;
+import org.mozilla.javascript.commonjs.module.ModuleScriptProvider;
+import org.mozilla.javascript.json.JsonParser;
 
 public class JsonModuleScriptProvider implements ModuleScriptProvider {
 
@@ -20,8 +27,8 @@ public class JsonModuleScriptProvider implements ModuleScriptProvider {
             return null;
         }
 
-        URI uri = baseUri.resolve(moduleUri);
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(uri)));
+        URL url = new URL(baseUri == null ? null : baseUri.toURL(), moduleUri.toString());
+        BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(url.toURI())));
         byte[] buf = new byte[1024];
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int n;
