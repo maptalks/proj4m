@@ -4,7 +4,7 @@
 
     <groupId>org.maptalks</groupId>
     <artifactId>proj4m</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <name>proj4m</name>
     <description>An Proj4 extension with supports for Chinese projections.</description>
