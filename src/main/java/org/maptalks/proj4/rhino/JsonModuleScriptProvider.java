@@ -20,7 +20,8 @@ public class JsonModuleScriptProvider implements ModuleScriptProvider {
             return null;
         }
 
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(moduleUri)));
+        URI uri = baseUri.resolve(moduleUri);
+        BufferedInputStream in = new BufferedInputStream(new FileInputStream(new File(uri)));
         byte[] buf = new byte[1024];
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int n;
